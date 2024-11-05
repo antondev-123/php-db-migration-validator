@@ -1,5 +1,5 @@
 {
-    "name": "antonkomarev/php-db-migration-validator",
+    "name": "antondev-123/php-db-migration-validator",
     "description": "Validate PHP database migration files",
     "type": "library",
     "license": "MIT",
@@ -20,7 +20,7 @@
     "homepage": "https://komarev.com/sources/php-db-migration-validator",
     "support": {
         "email": "open@cybercog.su",
-        "issues": "https://github.com/antonkomarev/php-db-migration-validator/issues",
+        "issues": "https://github.com/antondev-123/php-db-migration-validator/issues",
         "source": "https://github.com/cybercog/php-db-migration-validator",
         "docs": "https://github.com/cybercog/php-db-migration-validator"
     },

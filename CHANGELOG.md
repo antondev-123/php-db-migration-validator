@@ -20,6 +20,6 @@ All notable changes to `php-db-migration-validator` will be documented in this f
 
 - Initial release
 
-[Unreleased]: https://github.com/antonkomarev/php-db-migration-validator/compare/1.0.2...master
+[Unreleased]: https://github.com/antondev-123/php-db-migration-validator/compare/1.0.2...master
 [1.0.2]: https://github.com/cybercog/laravel-love/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/cybercog/laravel-love/compare/1.0.0...1.0.1
