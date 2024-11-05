@@ -4,8 +4,8 @@
 
 <p align="center">
 <a href="https://discord.gg/83Yd8MgYp9"><img src="https://img.shields.io/static/v1?logo=discord&label=&message=Discord&color=36393f&style=flat-square" alt="Discord"></a>
-<a href="https://github.com/antonkomarev/php-db-migration-validator/releases"><img src="https://img.shields.io/github/release/antonkomarev/php-db-migration-validator.svg?style=flat-square" alt="Releases"></a>
-<a href="https://github.com/antonkomarev/php-db-migration-validator/blob/master/LICENSE"><img src="https://img.shields.io/github/license/antonkomarev/php-db-migration-validator.svg?style=flat-square" alt="License"></a>
+<a href="https://github.com/antondev-123/php-db-migration-validator/releases"><img src="https://img.shields.io/github/release/antondev-123/php-db-migration-validator.svg?style=flat-square" alt="Releases"></a>
+<a href="https://github.com/antondev-123/php-db-migration-validator/blob/master/LICENSE"><img src="https://img.shields.io/github/license/antondev-123/php-db-migration-validator.svg?style=flat-square" alt="License"></a>
 </p>
 
 ## Introduction
@@ -28,7 +28,7 @@ You can add it to the server's git hooks to prevent migration rollback, or add v
 Pull in the package through Composer.
 
 ```shell
-php composer require antonkomarev/php-db-migration-validator
+php composer require antondev-123/php-db-migration-validator
 ```
 
 ## Usage
@@ -90,7 +90,7 @@ jobs:
                   extensions: tokenizer
                   coverage: none
             - name: Install PHP DB Migration Validator dependency
-              run: composer global require antonkomarev/php-db-migration-validator --no-interaction
+              run: composer global require antondev-123/php-db-migration-validator --no-interaction
             - name: Ensure all database migrations are irreversible
               run: php-db-migration-validator --rule=irreversible ./database/migrations
 ```
@@ -135,4 +135,4 @@ If you'd like to support the development of PHP DB Migration Validator, then ple
 
 [Anton Komarev]: https://komarev.com
 [CyberCog]: https://cybercog.su
-[sponsoring me]: https://paypal.me/antonkomarev
+[sponsoring me]: https://paypal.me/antondev-123
