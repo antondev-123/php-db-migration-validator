@@ -1,0 +1,167 @@
+#!/usr/bin/env php
+<?php
+
+use AK\DbMigrationValidator\IrreversibleMigrationsValidator;
+
+if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
+    echo 'Warning: The console should be invoked via the CLI version of PHP, not the ' . PHP_SAPI . ' SAPI' . PHP_EOL;
+    exit(2);
+}
+
+$composerAutoload = [
+    __DIR__ . '/../vendor/autoload.php', // standalone with "composer install" run
+    __DIR__ . '/../../../autoload.php',  // script is installed as a composer binary
+];
+foreach ($composerAutoload as $autoload) {
+    if (file_exists($autoload)) {
+        require($autoload);
+        break;
+    }
+}
+
+// Send all errors to stderr
+ini_set('display_errors', 'stderr');
+// open streams if not in CLI sapi
+defined('STDOUT') or define('STDOUT', fopen('php://stdout', 'w'));
+defined('STDERR') or define('STDERR', fopen('php://stderr', 'w'));
+
+$binaryPath = null;
+$command = null;
+$inputPaths = [];
+$validationRules = [];
+foreach ($argv as $key => $argument) {
+    if ($key === 0) {
+        $binaryPath = $argument;
+        continue;
+    }
+
+    if ($argument[0] === '-' || $argument === 'help') {
+        $argumentParts = explode('=', $argument);
+        switch($argumentParts[0]) {
+            case '--rule':
+                $command = 'validate';
+                $validationRules[] = $argumentParts[1];
+                break;
+            case '--help':
+            case 'help':
+                $command = 'help';
+                break;
+            default:
+                printError("Unknown argument " . $argumentParts[0]);
+                printUsage($binaryPath);
+                exit(2);
+        }
+    } else {
+        $inputPaths[] = $argument;
+    }
+}
+
+if ($command === 'help') {
+    printFormattedMessageToStream(
+        "\BPHP DB Migration Validator\C\n"
+        . "\B--------------------------\C\n"
+        . "by Anton Komarev <anton@komarev.com>\n\n",
+        STDOUT
+    );
+    printUsage($binaryPath, STDOUT);
+    exit(0);
+}
+
+if ($inputPaths === []) {
+    printError('Missing `path` argument');
+    printUsage($binaryPath);
+    exit(2);
+}
+
+if ($validationRules === []) {
+    printError('No validation rules specified, at least one `--rule=<rule>` must be provided');
+    printUsage($binaryPath);
+    exit(2);
+}
+
+foreach ($validationRules as $rule) {
+    switch ($rule) {
+        case 'irreversible':
+            $exitCode = (new IrreversibleMigrationsValidator())($inputPaths);
+            exit($exitCode);
+        default:
+            printError("Unknown validation rule `$rule`");
+            exit(2);
+    }
+}
+
+/**
+ * Display usage instructions.
+ *
+ * @param string $binaryPath
+ * @param resource|null $stream
+ * @return void
+ */
+function printUsage(
+    string $binaryPath,
+    $stream = null
+): void {
+    $binaryName = basename($binaryPath);
+    printFormattedMessageToStream(
+        <<<EOF
+Usage: $binaryName --rule=<rule> \B<path>\C
+
+  The following commands are available:
+
+    \Bhelp\C  Shows this usage instructions.
+
+  Options:
+
+    \Y--rules=<rule>\C   Validates the database migration(s) in the specified \G<path>\C.
+                     Exits with code 1 on validation errors, 2 on other errors and 0 on success.
+                     Available rules (\Bat least one should be specified\C):
+                     - \Yirreversible\C — ensure if migration file has `down` method and this method throws an Exception.
+
+EOF
+        ,
+        $stream ?? STDERR
+    );
+}
+
+function printError(
+    string $message
+) {
+    printFormattedMessageToStream(
+        "\B\RError\C: " . escapeFormatted($message) . PHP_EOL,
+        STDERR
+    );
+}
+
+/**
+ * @param string $string
+ * @param resource $stream
+ * @return void
+ */
+function printFormattedMessageToStream(
+    string $string,
+    $stream
+): void {
+    fwrite($stream, formatString($string));
+}
+
+function formatString(
+    string $string
+): string {
+    return strtr(
+        $string,
+        [
+            '\\R' => "\033[31m", // red
+            '\\G' => "\033[32m", // green
+            '\\B' => "\033[1m", // bold
+            '\\Y' => "\033[33m", // yellow
+            '\\C' => "\033[0m", // clear
+            '\\\\' => '\\',
+        ]
+    );
+}
+
+function escapeFormatted(
+    string $string
+): string {
+    return strtr($string, ['\\' => '\\\\']);
+}
